@@ -1,5 +1,3 @@
-package PenjadwalanAndBooking;
-
 public class DataBooking {
     String nama, tanggal, jam, durasi, lapangan;
 
@@ -12,8 +10,7 @@ public class DataBooking {
     }
 
     public int hitungTotalBayar() {
-        int hargaPerJam = 75000; // contoh harga
+        int hargaPerJam = 75000;
         return Integer.parseInt(durasi) * hargaPerJam;
     }
 }
-
