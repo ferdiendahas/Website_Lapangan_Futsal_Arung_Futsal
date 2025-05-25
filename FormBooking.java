@@ -1,19 +1,14 @@
-package PenjadwalanAndBooking;
-
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class FormBooking extends JFrame {
+public class FormBooking extends JPanel {
     private JTextField tfNama, tfTanggal, tfJam, tfDurasi;
     private JComboBox<String> cbLapangan;
     private static ArrayList<DataBooking> bookings = new ArrayList<>();
 
     public FormBooking() {
-        setTitle("Form Booking Lapangan");
-        setSize(400, 300);
         setLayout(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JLabel lbl1 = new JLabel("Nama Pelanggan:");
         JLabel lbl2 = new JLabel("Tanggal (yyyy-mm-dd):");
@@ -44,9 +39,6 @@ public class FormBooking extends JFrame {
         add(btnBooking);
 
         btnBooking.addActionListener(e -> prosesBooking());
-
-        setLocationRelativeTo(null);
-        setVisible(true);
     }
 
     private void prosesBooking() {
@@ -61,13 +53,15 @@ public class FormBooking extends JFrame {
             return;
         }
 
-        // Simpan data
+        try {
+            Integer.parseInt(durasi); // validasi durasi harus angka
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Durasi harus berupa angka!");
+            return;
+        }
+
         DataBooking db = new DataBooking(nama, tanggal, jam, durasi, lapangan);
         bookings.add(db);
-
-        // Tampilkan invoice
         new InvoiceFrame(db);
     }
 }
-
-
