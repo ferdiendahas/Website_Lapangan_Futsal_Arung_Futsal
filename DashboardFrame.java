@@ -3,7 +3,8 @@ import java.awt.*;
 
 public class DashboardFrame extends JFrame {
     private JLabel contentTitleLabel;
-    private JLabel contentLabel;
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
 
     public DashboardFrame() {
         setTitle("Dashboard Admin - Arung Futsal");
@@ -12,30 +13,27 @@ public class DashboardFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Header
+        // Header utama di atas
         JLabel header = new JLabel("Dashboard Admin - Arung Futsal", SwingConstants.CENTER);
         header.setFont(new Font("Segoe UI", Font.BOLD, 24));
         header.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         header.setOpaque(true);
-        header.setBackground(new Color(45, 118, 232)); // Biru gelap
+        header.setBackground(new Color(45, 118, 232));
         header.setForeground(Color.WHITE);
         add(header, BorderLayout.NORTH);
 
-        // Sidebar / Navigasi Kiri
+        // Sidebar kiri
         JPanel sidebar = new JPanel(new GridLayout(4, 1, 15, 15));
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        sidebar.setBackground(new Color(37, 56, 88)); // Navy blue gelap
-
+        sidebar.setBackground(new Color(37, 56, 88));
         sidebar.add(createNavButton("Manajemen Lapangan"));
         sidebar.add(createNavButton("Manajemen Pelanggan"));
         sidebar.add(createNavButton("Booking"));
         sidebar.add(createNavButton("Inventaris"));
-
         add(sidebar, BorderLayout.WEST);
 
-        // Panel Konten Tengah
+        // Panel utama isi konten
         JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setBackground(new Color(245, 247, 250)); // Light gray biru
 
         contentTitleLabel = new JLabel("Selamat Datang di Dashboard", SwingConstants.LEFT);
         contentTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
@@ -43,10 +41,12 @@ public class DashboardFrame extends JFrame {
         contentTitleLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
         contentPanel.add(contentTitleLabel, BorderLayout.NORTH);
 
-        contentLabel = new JLabel("Pilih menu dari navigasi di kiri", SwingConstants.CENTER);
-        contentLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        contentLabel.setForeground(new Color(80, 80, 80));
-        contentPanel.add(contentLabel, BorderLayout.CENTER);
+        // Panel isi halaman yang bisa berganti (CardLayout)
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+        cardPanel.add(new JLabel("Pilih menu dari navigasi di kiri", SwingConstants.CENTER), "home");
+        cardPanel.add(new FormBooking(), "booking");
+        contentPanel.add(cardPanel, BorderLayout.CENTER);
 
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -55,7 +55,7 @@ public class DashboardFrame extends JFrame {
         JButton btn = new JButton(label);
         btn.setFocusPainted(false);
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        btn.setBackground(new Color(68, 138, 255)); // Biru terang
+        btn.setBackground(new Color(68, 138, 255));
         btn.setForeground(Color.WHITE);
         btn.setOpaque(true);
         btn.setBorderPainted(false);
@@ -63,8 +63,9 @@ public class DashboardFrame extends JFrame {
         btn.addActionListener(e -> updateContent(label));
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(40, 100, 210)); // hover warna lebih gelap
+                btn.setBackground(new Color(40, 100, 210));
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(new Color(68, 138, 255));
             }
@@ -74,12 +75,10 @@ public class DashboardFrame extends JFrame {
 
     private void updateContent(String sectionTitle) {
         contentTitleLabel.setText("Halaman " + sectionTitle);
-        contentLabel.setText("Konten dari " + sectionTitle + " ditampilkan di sini.");
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new DashboardFrame().setVisible(true);
-        });
+        if (sectionTitle.equals("Booking")) {
+            cardLayout.show(cardPanel, "booking");
+        } else {
+            cardLayout.show(cardPanel, "home");
+        }
     }
 }
