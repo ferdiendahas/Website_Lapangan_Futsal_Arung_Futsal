@@ -9,12 +9,10 @@ public class Rekap_Pendapatan {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/arung_futsal", "root", "");
              Statement stmt = conn.createStatement()) {
 
-            // Ambil total pendapatan per bulan
             String query = "SELECT MONTH(payment_date) AS bulan, SUM(amount) AS total " +
                            "FROM pembayaran GROUP BY MONTH(payment_date) ORDER BY bulan";
             ResultSet rs = stmt.executeQuery(query);
-
-            // Peta nama bulan
+            
             Map<Integer, String> bulanMap = new HashMap<>();
             bulanMap.put(1, "Januari");
             bulanMap.put(2, "Februari");
