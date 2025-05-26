@@ -1,5 +1,3 @@
-package PenjadwalanAndBooking;
-
 import javax.swing.*;
 
 public class InvoiceFrame extends JFrame {
@@ -28,4 +26,3 @@ public class InvoiceFrame extends JFrame {
         setVisible(true);
     }
 }
-
