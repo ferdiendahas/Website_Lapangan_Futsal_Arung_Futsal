@@ -24,7 +24,7 @@ public class LoginFrame extends JFrame {
         // Panel form
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        formPanel.setBackground(Color.WHITE); // Warna dasar putih seperti konten dashboard
+        formPanel.setBackground(Color.WHITE); 
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -58,7 +58,7 @@ public class LoginFrame extends JFrame {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(loginButton, BorderLayout.CENTER);
         formPanel.add(buttonPanel);
-        formPanel.add(new JLabel()); // Kosongkan sel terakhir
+        formPanel.add(new JLabel()); 
 
         add(formPanel, BorderLayout.CENTER);
     }
