@@ -33,7 +33,7 @@ import DataBase.DbConn;
  * @author ASUS
  */
 public class Frame_Inventaris extends javax.swing.JFrame {
-    private JTextField txtId, txtNama, txtJenis, txtHarga, txtStok;
+    private JTextField txtId;
 
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frame_Inventaris.class.getName());
@@ -43,50 +43,15 @@ public class Frame_Inventaris extends javax.swing.JFrame {
      */
     public Frame_Inventaris() {
         initComponents();
-     // Form input
-    JLabel lblNama = new JLabel("Nama:");
-    txtNama = new JTextField(20);
-
-    JLabel lblJenis = new JLabel("Jenis:");
-    txtJenis = new JTextField(20);
-
-    JLabel lblHarga = new JLabel("Harga:");
-    txtHarga = new JTextField(10);
-
-    JLabel lblStok = new JLabel("Stok:");
-    txtStok = new JTextField(5);
 
     // ID untuk update
     txtId = new JTextField(5);
     txtId.setVisible(false); // disembunyikan, hanya untuk update
 
-    // Tombol CRUD
-    JButton btnTambah = new JButton("Tambah");
-    JButton btnUpdate = new JButton("Update");
-    JButton btnDelete = new JButton("Hapus");
-
-    // Panel untuk input dan tombol
-    JPanel panelForm = new JPanel(new GridLayout(5, 2, 5, 5));
-    panelForm.add(lblNama); panelForm.add(txtNama);
-    panelForm.add(lblJenis); panelForm.add(txtJenis);
-    panelForm.add(lblHarga); panelForm.add(txtHarga);
-    panelForm.add(lblStok); panelForm.add(txtStok);
-    panelForm.add(btnTambah); panelForm.add(btnUpdate);
-
-    // Panel utama
-    JPanel panelUtama = new JPanel(new BorderLayout());
-    panelUtama.add(panelForm, BorderLayout.NORTH);
-    panelUtama.add(new JScrollPane(jTable1), BorderLayout.CENTER);
-    panelUtama.add(btnDelete, BorderLayout.SOUTH);
-
-    this.setContentPane(panelUtama);
-    this.pack();
-    this.setLocationRelativeTo(null);
-
     loadTableInventaris(); // Panggil fungsi untuk load data ke tabel
-    btnTambah.addActionListener(e -> tambahData());
-    btnUpdate.addActionListener(e -> updateData());
-    btnDelete.addActionListener(e -> hapusData());
+    Tambah.addActionListener(e -> tambahData());
+    Update.addActionListener(e -> updateData());
+    Hapus.addActionListener(e -> hapusData());
     }
     
     private void tambahData() {
@@ -126,21 +91,19 @@ public class Frame_Inventaris extends javax.swing.JFrame {
     try (Connection conn = DbConn.getConnection(); Statement st = conn.createStatement()) {
         boolean adaYangDipilih = false;
         for (int i = 0; i < model.getRowCount(); i++) {
-            Boolean selected = (Boolean) model.getValueAt(i, 0);
+            Boolean selected = (Boolean) model.getValueAt(i, 0); // Checkbox
             if (selected != null && selected) {
                 adaYangDipilih = true;
-                int id = (int) model.getValueAt(i, 1);
+                int id = Integer.parseInt(model.getValueAt(i, 5).toString());
                 st.executeUpdate("DELETE FROM inventaris_peralatan WHERE id_peralatan = " + id);
             }
         }
-
         if (adaYangDipilih) {
             JOptionPane.showMessageDialog(this, "Data yang dipilih berhasil dihapus.");
             loadTableInventaris();
         } else {
             JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus.");
         }
-
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Gagal menghapus data: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -189,7 +152,7 @@ private void updateData() {
 
 
     private void loadTableInventaris() {
-    String[] kolom = {"Select", "Nama Peralatan", "Jenis Peralatan", "Harga", "Jumlah Stok"};
+    String[] kolom = {"Select", "Nama Peralatan", "Jenis Peralatan", "Harga", "Jumlah Stok", "ID Peralatan"};
     DefaultTableModel model = new DefaultTableModel(null, kolom) {
         @Override
         public Class<?> getColumnClass(int column) {
@@ -212,6 +175,7 @@ private void updateData() {
             txtJenis.setText(jTable1.getValueAt(row, 2).toString());
             txtHarga.setText(jTable1.getValueAt(row, 3).toString());
             txtStok.setText(jTable1.getValueAt(row, 4).toString());
+            txtId.setText(jTable1.getValueAt(row, 5).toString());
 
             // Ambil ID dari database berdasarkan nama+jenis+harga+stok (karena ID tidak ditampilkan)
             try (Connection conn = DbConn.getConnection();
@@ -263,8 +227,14 @@ private void updateData() {
     columnModel.getColumn(1).setPreferredWidth(150);  // Jenis Peralatan
     columnModel.getColumn(2).setPreferredWidth(100);  // Harga
     columnModel.getColumn(3).setPreferredWidth(150);  // Jumlah Stok
+    
+    // Sembunyikan kolom ID (kolom ke-5, index = 5)
+    jTable1.getColumnModel().getColumn(5).setMinWidth(0);
+    jTable1.getColumnModel().getColumn(5).setMaxWidth(0);
+    jTable1.getColumnModel().getColumn(5).setWidth(0);
 
-    String sql = "SELECT nama_peralatan, jenis_peralatan, harga, jumlah_stok FROM inventaris_peralatan";
+
+    String sql = "SELECT id_peralatan, nama_peralatan, jenis_peralatan, harga, jumlah_stok FROM inventaris_peralatan";
     try (Connection conn = DbConn.getConnection();
          Statement st = conn.createStatement();
          ResultSet rs = st.executeQuery(sql)) {
@@ -276,6 +246,7 @@ private void updateData() {
                 rs.getString("jenis_peralatan"),
                 rs.getBigDecimal("harga"),
                 rs.getInt("jumlah_stok"),
+                rs.getInt("id_peralatan")
             };
             model.addRow(row);
         }
@@ -295,11 +266,80 @@ private void updateData() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        Stok_Barang = new javax.swing.JLabel();
+        txtharga = new javax.swing.JLabel();
+        labeljenis = new javax.swing.JLabel();
+        labelnama = new javax.swing.JLabel();
+        Hapus = new java.awt.Button();
+        Update = new java.awt.Button();
+        Tambah = new java.awt.Button();
+        txtNama = new java.awt.TextField();
+        txtJenis = new java.awt.TextField();
+        txtStok = new java.awt.TextField();
+        txtHarga = new java.awt.TextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 255));
 
+        jPanel1.setBackground(new java.awt.Color(51, 153, 255));
+
+        Stok_Barang.setForeground(new java.awt.Color(255, 255, 255));
+        Stok_Barang.setText("Stok Barang");
+
+        txtharga.setForeground(new java.awt.Color(255, 255, 255));
+        txtharga.setText("Harga Barang");
+
+        labeljenis.setForeground(new java.awt.Color(255, 255, 255));
+        labeljenis.setText("Jenis Barang");
+
+        labelnama.setForeground(new java.awt.Color(255, 255, 255));
+        labelnama.setText("Nama Barang");
+
+        Hapus.setLabel("Hapus");
+        Hapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HapusActionPerformed(evt);
+            }
+        });
+
+        Update.setLabel("Update");
+        Update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UpdateActionPerformed(evt);
+            }
+        });
+
+        Tambah.setLabel("Tambah");
+
+        txtNama.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNamaActionPerformed(evt);
+            }
+        });
+
+        txtJenis.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtJenisActionPerformed(evt);
+            }
+        });
+
+        txtStok.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStokActionPerformed(evt);
+            }
+        });
+
+        txtHarga.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtHargaActionPerformed(evt);
+            }
+        });
+
+        jTable1.setBackground(new java.awt.Color(255, 255, 255));
+        jTable1.setForeground(new java.awt.Color(51, 153, 255));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -311,21 +351,118 @@ private void updateData() {
                 "ID Peralatan", "Nama Peralatan", "Jenis Peralatan", "Harga", "Jumlah Stok"
             }
         ));
+        jTable1.setSelectionBackground(new java.awt.Color(51, 102, 255));
         jScrollPane1.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(161, 161, 161)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelnama)
+                                    .addComponent(labeljenis))
+                                .addGap(70, 70, 70)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(txtJenis, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtStok, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtHarga, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(13, 13, 13))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(Stok_Barang)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(Tambah, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(45, 45, 45)
+                                                .addComponent(Update, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(36, 36, 36)
+                                        .addComponent(Hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addGap(382, 382, 382)
+                                        .addComponent(txtharga)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap(42, Short.MAX_VALUE))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelnama)
+                    .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtharga))
+                .addGap(32, 32, 32)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtJenis, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labeljenis)
+                    .addComponent(Stok_Barang)
+                    .addComponent(txtStok, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(53, 53, 53)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Tambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Update, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE))
+        );
+
+        Tambah.getAccessibleContext().setAccessibleName("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNamaActionPerformed
+
+    private void txtHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHargaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtHargaActionPerformed
+
+    private void txtJenisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJenisActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtJenisActionPerformed
+
+    private void txtStokActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStokActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStokActionPerformed
+
+    private void UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_UpdateActionPerformed
+
+    private void HapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HapusActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_HapusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -353,7 +490,19 @@ private void updateData() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.Button Hapus;
+    private javax.swing.JLabel Stok_Barang;
+    private java.awt.Button Tambah;
+    private java.awt.Button Update;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel labeljenis;
+    private javax.swing.JLabel labelnama;
+    private java.awt.TextField txtHarga;
+    private java.awt.TextField txtJenis;
+    private java.awt.TextField txtNama;
+    private java.awt.TextField txtStok;
+    private javax.swing.JLabel txtharga;
     // End of variables declaration//GEN-END:variables
 }
