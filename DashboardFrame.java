@@ -13,7 +13,7 @@ public class DashboardFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Header utama di atas
+        // Header
         JLabel header = new JLabel("Dashboard Admin - Arung Futsal", SwingConstants.CENTER);
         header.setFont(new Font("Segoe UI", Font.BOLD, 24));
         header.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
@@ -22,7 +22,7 @@ public class DashboardFrame extends JFrame {
         header.setForeground(Color.WHITE);
         add(header, BorderLayout.NORTH);
 
-        // Sidebar kiri
+        // Sidebar
         JPanel sidebar = new JPanel(new GridLayout(4, 1, 15, 15));
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         sidebar.setBackground(new Color(37, 56, 88));
@@ -32,20 +32,20 @@ public class DashboardFrame extends JFrame {
         sidebar.add(createNavButton("Inventaris"));
         add(sidebar, BorderLayout.WEST);
 
-        // Panel utama isi konten
+        // Content Panel
         JPanel contentPanel = new JPanel(new BorderLayout());
-
         contentTitleLabel = new JLabel("Selamat Datang di Dashboard", SwingConstants.LEFT);
         contentTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         contentTitleLabel.setForeground(new Color(45, 118, 232));
         contentTitleLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
         contentPanel.add(contentTitleLabel, BorderLayout.NORTH);
 
-        // Panel isi halaman yang bisa berganti (CardLayout)
+        // Card Layout for different sections
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.add(new JLabel("Pilih menu dari navigasi di kiri", SwingConstants.CENTER), "home");
         cardPanel.add(new FormBooking(), "booking");
+        cardPanel.add(new InventoryManagement(), "inventaris"); // Add Inventory Management panel
         contentPanel.add(cardPanel, BorderLayout.CENTER);
 
         add(contentPanel, BorderLayout.CENTER);
@@ -77,6 +77,8 @@ public class DashboardFrame extends JFrame {
         contentTitleLabel.setText("Halaman " + sectionTitle);
         if (sectionTitle.equals("Booking")) {
             cardLayout.show(cardPanel, "booking");
+        } else if (sectionTitle.equals("Inventaris")) {
+            cardLayout.show(cardPanel, "inventaris");
         } else {
             cardLayout.show(cardPanel, "home");
         }
