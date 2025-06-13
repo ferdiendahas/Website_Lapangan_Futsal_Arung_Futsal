@@ -1,6 +1,1 @@
-try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/futsal_db", "root", "");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database.");
-            System.exit(1);
-        }
+
